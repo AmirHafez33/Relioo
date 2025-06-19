@@ -1,0 +1,92 @@
+> register page <
+{
+  => input names (name , username , email , password , birth_date , bio)
+  => required input (name , email , password , birth_date)
+  => url(localhost\Relioo\api\register.php)
+}
+
+
+> login page <
+{
+  => login with email & password 
+  => url(localhost\Relioo\api\login.php)
+}
+
+> current User <
+{
+  => url(localhost\Relioo\api\currentuser\currentUserData.php)
+}
+
+> create post <
+{
+  => input names (movie_id , text , title , rate)
+  => required inputs (movie_id , text , rate)
+  => url(localhost\Relioo\api\posts\createPost.php)
+}
+
+
+> update post <
+{
+  => required (post_id)
+  => valied to update (text , title , rate) only .
+  =>url(localhost\Relioo\api\posts\updatePost.php)
+}
+
+
+> delete post <
+{
+  => required (post_id)
+  =>url(localhost\Relioo\api\posts\deletPost.php)
+}
+
+
+> All posts <
+{
+  => home page
+  =>url(localhost\Relioo\api\posts\Allposts.php)
+}
+
+> insert comment <
+{
+  =>  required (post_id , text)
+  =>url(localhost\Relioo\api\posts\postCommentInsert.php)
+}
+
+
+> delete comment <
+{
+  => must comment's owner delete the comment
+  =>  required (post_id , comment_id) 
+  =>url(localhost\Relioo\api\posts\postCommentDelete.php)
+}
+
+
+> Insert & delete like <
+{
+  =>  required (post_id)
+  =>url(localhost\Relioo\api\posts\postLikeInsert.delete.php)
+}
+
+> Insert & delete bookmark <
+{
+  =>  required (post_id)
+  =>url(localhost\Relioo\api\posts\bookmark.php)
+}
+
+> get notification <
+{
+  =>url(localhost\Relioo\api\notifications\get_notifications.php)
+}
+
+
+> mark notification as read <
+{
+  => required (notification_id)
+  =>url(localhost\Relioo\api\notifications\mark_read.php)
+}
+
+
+> logout <
+{
+  => url(localhost\Relioo\api\logout.php)
+}
