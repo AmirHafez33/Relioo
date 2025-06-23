@@ -35,7 +35,7 @@ if ($stmt->num_rows === 0) {
 $user = $stmt->fetch_assoc(); // ← ممكن تستخدمه في البوست أو التعليقات
 
 $user_id = $user['id'];
-$user_name = $user['user_name'];
+$user_name = $user['name'];
 
 $like = new database("likes");
 $like_check = "SELECT * FROM likes WHERE user_id = '$user_id' AND post_id = '$post_id'";
@@ -68,7 +68,7 @@ if($row['user_id'] == $user['id']){
 
 }else{
 $notification = new database("notifications");
-$insert_notification = $notification->addNotification($post_owner_id, "{$user_name} commented on your review!", "Allposts.php?post_id=$post_id");
+$insert_notification = $notification->addNotification($post_owner_id, "{$user_name} add like on your review!", "Allposts.php?post_id=$post_id");
 }
 echo(json_encode(["sucess"=>true , "message"=>"like inserted successfully"]));
 }

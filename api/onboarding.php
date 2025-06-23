@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 
     $name = $data->name ?? '';
     $username = $data->username ?? '';
-    // $username = $data->image ?? '';
+    $pic_url = $data->image ?? '';
     $bio = $data->bio ?? '';
 
 /********************التحقق من التوكن************************* */
@@ -57,29 +57,10 @@ $register = new database("users");
             $user['id']
         );
     }
-
-    if (isset($_FILES['image']['name'])) {
-        if ($_FILES['image']['name']) {
-            $imgname = $_FILES['image']['name'];
-            $tmp = $_FILES['image']['tmp_name'];
-            if ($_FILES['image']['error'] == 0) {
-                $extensions = ['jpg', 'png', 'gif'];
-                $ext = pathinfo($imgname, PATHINFO_EXTENSION);
-                if (in_array($ext, $extensions)) {
-                    $newName = uniqid() . "." . $ext;
-                    move_uploaded_file($tmp, "../images/$newName");
-                    // $imgnames[] = $newName;
-                    $img_query = $register->update(["pic_url" => "$newName"], $user['id']);
-                } else {
-                    echo json_encode("file error");
-                }
-            } else {
-                echo json_encode("no image");
-            }
-        }
-    }
     echo json_encode([
         "success"=>true,
         "user_data"=>$user
     ]);
 }
+
+

@@ -30,31 +30,22 @@ if ($stmt->num_rows === 0) {
 
 $user = $stmt->fetch_assoc(); // ← ممكن تستخدمه في البوست أو التعليقات
 $user_id = $user['id'];
-$post_data = json_decode(file_get_contents('php://input'));
-$post_id = $post_data->post_id ?? '';
 
+$bookmarkes = new database("bookmarks");
+$sel_bookmarkes = $bookmarkes->select("user_id" , $user_id);
+// echo(json_encode("bookmarked posts"));
 
-$bookmark = new database("bookmarks");
-$bookmark_check = "SELECT * FROM bookmarks WHERE user_id = '$user_id' AND post_id = '$post_id'";
-$query = $bookmark->conn->query($bookmark_check);
-// $like_exsist = count($query);
-$bookmark_exsist = $query->num_rows;
+foreach($sel_bookmarkes as $post){
+        echo(json_encode(["success"=>true]));
+        $posts = new database("posts");
+        $post_data = $posts->select("post_id" ,$post['post_id'] );
+        $bookmarked_posts[] = $post_data;
+        
+        foreach($post_data as $post){
+            // echo(json_encode(["movie_id"=>$post['movie_id']]));
+            $movies = new database("movies");
+            $movie = $movies->select("movie_id",$post['movie_id']);
+            echo(json_encode(["post_data"=>$post_data[0]+$movie[0]]));
+        }
+    }
 
-
-if($bookmark_exsist == 1){
-    $bookmark_delete = "DELETE FROM bookmarks WHERE user_id = '$user_id' AND post_id = '$post_id' ";
-    $delete_bookmark = $like->conn->query($bookmark_delete);
-      echo(json_encode(["sucess"=>true , "message"=>"post bookmark deleted successfully"]));
-
-    // $total_likes = $old_likes - 1 ;
-}else{
-    $insert_bookmark = $bookmark->insert([
-        "user_id"=>$user_id,
-        "post_id"=>$post_id
-    ]);
-    // $total_likes = $old_likes + 1;
-    // $post_owner_id = $row['user_id'];
-  // add notificatoin
-  echo(json_encode(["sucess"=>true , "message"=>"post bookmarked successfully"]));
-
-}
