@@ -45,6 +45,7 @@ foreach ($posts as $post) {
     $movie = $movies->select("movie_id",$post['movie_id']);
     $post_likes = $likesDB->select("post_id", $post['post_id']);
     $post_comments = $commentsDB->select("post_id", $post['post_id']);
+    $post_id = $post['post_id'];
     if(isset($user_id)){
     /************************check this post is liked from the current user********************************* */
 $is_liked = new database("likes");

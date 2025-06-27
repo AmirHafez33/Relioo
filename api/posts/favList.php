@@ -35,20 +35,13 @@ if ($stmt->num_rows === 0) {
 $user = $stmt->fetch_assoc(); // ← ممكن تستخدمه في البوست أو التعليقات
 
 $user_id = $user['id'];
-// echo(json_encode($user_id));
 
-/************************check this movie is in favorities list for the current user********************************* */
-$is_fav = new database("favorities");
-$sel_is_fav = "SELECT * FROM favorities WHERE user_id = $user_id AND movie_id = $movie_id ";
-$result = $is_fav->conn->query($sel_is_fav);
+// select all fav movies id 
+$fav_movies = new database("favorities");
+$sel_favs = $fav_movies->select("user_id",$user_id);
 
-if ($result->num_rows > 0) {
-    // The post is fav by the user
-    $is_fav = true;
-} else {
-    // Not fav
-    $is_fav = false;
+foreach($sel_favs as $fav){
+    $fav_id = $fav['movie_id'];
+    $fav_list[] = $fav_id ;
 }
-
-
-echo(json_encode(["success"=>true,"is_fav"=>$is_fav]));
+echo(json_encode(["success"=>true,"fav_list"=>$fav_list]));

@@ -43,7 +43,7 @@ $bookmark_exsist = $query->num_rows;
 
 if($bookmark_exsist == 1){
     $bookmark_delete = "DELETE FROM bookmarks WHERE user_id = '$user_id' AND post_id = '$post_id' ";
-    $delete_bookmark = $like->conn->query($bookmark_delete);
+    $delete_bookmark = $bookmark->conn->query($bookmark_delete);
       echo(json_encode(["sucess"=>true , "message"=>"post bookmark deleted successfully"]));
 
     // $total_likes = $old_likes - 1 ;

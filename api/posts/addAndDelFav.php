@@ -46,9 +46,12 @@ $fav_exsist = $query->num_rows;
 if($fav_exsist == 1){
     $fav_delete = "DELETE FROM favorities WHERE user_id = '$user_id' AND movie_id = '$movie_id' ";
     $delete_fav = $fav->conn->query($fav_delete);
+    echo(json_encode(["success"=>true,"is_fav"=>false,"message"=>"this movie is deleted from fav list"]));
 }else{
     $insert_fav = $fav->insert([
         "user_id"=>$user_id,
         "movie_id"=>$movie_id
     ]);
+    
+    echo(json_encode(["success"=>true,"is_fav"=>true,"message"=>"this movie is added to fav list"]));
 }
