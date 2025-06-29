@@ -6,26 +6,6 @@ header('Content-Type: application/json');
 session_start();
 require_once "../userDataBase/database.php";
 
-/******************** session validation ****************** */
-if (isset($_SESSION['login_user_data'])) {
-    $user_id = $_SESSION['login_user_data']['id'];
-    // header("Content-Type:application/json");
-    require_once "../userDataBase/database.php";
-    $user_posts = new database("posts");
-    $user_posts_array = $user_posts->select("user_id", $user_id);
-    $user = new database("users");
-    $user_data = $user->select("id", $user_id);
-    echo (json_encode(["userData" => $user_data]));
-
-    require_once "UserFollowList.php";
-
-    foreach ($user_posts_array as $post) {
-        // print(json_encode($post));
-        $posts[] = $post;
-    }
-    print(json_encode(["posts" => $posts]));
-}
-
     /************************** token validation ************************** */
 
 $headers = apache_request_headers();

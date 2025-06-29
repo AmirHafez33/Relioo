@@ -58,15 +58,27 @@ $result = $update_post->conn->query($select_comments);
    $post_owner_id = $row['user_id'];
 $total_comments = $old_comments + 1 ;
 
+// get post data
+$post = "SELECT * FROM posts WHERE post_id = '$post_id'";
+$result = $update_post->conn->query($post);
+$row = $result->fetch_assoc();
+    $post_text = $row['text'];
+
+
 $update = "UPDATE posts SET comments = $total_comments WHERE post_id = '$post_id' ";
 $update_query = $update_post->conn->query($update);
-echo(json_encode($row['user_id']));
-echo(json_encode($user['id']));
 die();
 // add notificatoin
 if($row['user_id'] == $user['id']){
 
 }else{
 $notification = new database("notifications");
-$insert_notification = $notification->addNotification($post_owner_id, "{$user_name} commented on your review!", "Allposts.php?post_id=$post_id");
+$insert_notification = $notification->addNotification($post_owner_id, "{$user_name} commented on your review", $post_id ,$post_text,$user_id);
+
+// add activity to database
+$activity = new database("activities");
+$action = "comment";
+$insert_activity = $activity->addActivity($user_id, "you added comment on a review", $post_id , $post_text , $action);
+
+
 }

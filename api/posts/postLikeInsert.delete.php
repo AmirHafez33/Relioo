@@ -36,12 +36,13 @@ $user = $stmt->fetch_assoc(); // ← ممكن تستخدمه في البوست �
 
 $user_id = $user['id'];
 $user_name = $user['name'];
-
+$user_pic = $user['pic_url'];
 $like = new database("likes");
 $like_check = "SELECT * FROM likes WHERE user_id = '$user_id' AND post_id = '$post_id'";
 $query = $like->conn->query($like_check);
 // $like_exsist = count($query);
 $like_exsist = $query->num_rows;
+
 
 
 // get the number of total likes before update
@@ -51,6 +52,11 @@ $result = $update_post->conn->query($select_likes);
     $row = $result->fetch_assoc();
     $old_likes = $row['likes']; // assuming your column is named 'likes'
    
+    // get post data
+$post = "SELECT * FROM posts WHERE post_id = '$post_id'";
+$result = $update_post->conn->query($post);
+$row = $result->fetch_assoc();
+    $post_text = $row['text'];
 
 if($like_exsist == 1){
     $like_delete = "DELETE FROM likes WHERE user_id = '$user_id' AND post_id = '$post_id' ";
@@ -68,7 +74,13 @@ if($row['user_id'] == $user['id']){
 
 }else{
 $notification = new database("notifications");
-$insert_notification = $notification->addNotification($post_owner_id, "{$user_name} add like on your review!", "Allposts.php?post_id=$post_id");
+$insert_notification = $notification->addNotification($post_owner_id, "{$user_name} add like on your review!", $post_id , $post_text,$user_id);
+
+// add activity to database
+$activity = new database("activities");
+$action = "like";
+$insert_activity = $activity->addActivity($user_id, "you added like on a review", $post_id , $post_text , $action);
+
 }
 echo(json_encode(["sucess"=>true , "message"=>"like inserted successfully"]));
 }

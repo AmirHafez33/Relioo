@@ -102,10 +102,17 @@ class database
         $delete = "DELETE FROM " . $this->tableName . " WHERE id = '{$comment_id}' AND user_id = '$user_id' ";
         $query = ($this->conn)->query($delete);
     }
-    public function addNotification($userId, $message, $link = null) {
+    public function addNotification($userId, $message, $post_id,$post_text,$by_user_id) {
         
-        $stmt = $this->conn->prepare("INSERT INTO notifications (user_id, message, link) VALUES (?, ?, ?)");
-        $stmt->bind_param("iss", $userId, $message, $link);
+        $stmt = $this->conn->prepare("INSERT INTO notifications (user_id, message, post_id , post_text,by_user_id) VALUES (?, ?, ?, ?,?)");
+        $stmt->bind_param("isisi", $userId, $message, $post_id,$post_text,$by_user_id);
+        $stmt->execute();
+    }
+
+    public function addActivity($userId, $message, $post_id,$post_text,$action) {
+        $is_read = 0 ;
+        $stmt = $this->conn->prepare("INSERT INTO activities (user_id, message, post_id , post_text,action ,is_read) VALUES (?, ?, ?, ?,?,?)");
+        $stmt->bind_param("isissi", $userId, $message, $post_id,$post_text,$action,$is_read);
         $stmt->execute();
     }
     

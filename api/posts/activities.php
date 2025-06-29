@@ -35,13 +35,20 @@ if ($stmt->num_rows === 0) {
 $user = $stmt->fetch_assoc(); // ← ممكن تستخدمه في البوست أو التعليقات
 
 $user_id = $user['id'];
+$user_name = $user['name'];
 
-// select all fav movies id 
-$fav_movies = new database("favorities");
-$sel_favs = $fav_movies->select("user_id",$user_id);
-$fav_list = [] ;
-foreach($sel_favs as $fav){
-    $fav_id = $fav['movie_id'];
-    $fav_list[] = $fav_id ;
+$activities = new database("activities");
+
+// $notification = new database("notifications");
+$select = "SELECT * FROM activities WHERE user_id = $user_id AND is_read = 0 ORDER BY created_at DESC";
+$result = $activities->conn->query($select);
+
+
+$activities = [];
+while($row = $result->fetch_assoc()) {
+     
+    $activities[] = $row;
 }
-echo(json_encode(["success"=>true,"fav_list"=>$fav_list]));
+
+
+echo json_encode($activities);

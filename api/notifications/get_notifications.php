@@ -41,7 +41,22 @@ $result = $notification->conn->query($select);
 
 $notifications = [];
 while($row = $result->fetch_assoc()) {
+      $users = new database("users");
+      $by_user_id = $row['by_user_id'];
+      $select = "SELECT * FROM users WHERE id = $by_user_id" ;
+    $sel_user = $users->conn->query($select);
+    
+    if ($sel_user && $sel_user->num_rows > 0) {
+        $user_data = $sel_user->fetch_assoc();
+
+        // تأكد إن pic_url موجود قبل استخدامه
+        $row['by_user_pic_url'] = isset($user_data['pic_url']) ? $user_data['pic_url'] : null;
+    } else {
+        $row['by_user_pic_url'] = null; // أو حط صورة افتراضية مثلاً
+    }
+
     $notifications[] = $row;
 }
+
 
 echo json_encode($notifications);
