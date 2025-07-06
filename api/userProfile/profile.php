@@ -59,13 +59,61 @@ echo (json_encode(["is_followed" => $is_followed]));
     
     echo (json_encode(["AnotherUserData" => $user_data]));
 
-    require_once "UserFollowList.php";
     $posts = [] ;
     foreach ($user_posts_array as $post) {
-        // print(json_encode($post));
-        $posts[] = $post;
+        $movies = new database("movies");
+            $likesDB = new database("likes");
+            $commentsDB = new database("comments");
+
+       $movie = $movies->select("movie_id",$post['movie_id']);
+    $post_likes = $likesDB->select("post_id", $post['post_id']);
+    $post_comments = $commentsDB->select("post_id", $post['post_id']);
+    $post_id = $post['post_id'];
+    if(isset($user_id)){
+    /************************check this post is liked from the current user********************************* */
+$is_liked = new database("likes");
+$sel_is_liked = "SELECT * FROM likes WHERE user_id = $user_id AND post_id = $post_id ";
+$result = $is_liked->conn->query($sel_is_liked);
+
+if ($result->num_rows > 0) {
+    // The post is liked by the user
+    $is_liked = true;
+} else {
+    // Not liked
+    $is_liked = false;
+}
+
+/************************check this post is bookmarked from the current user********************************* */
+$is_bookmarked = new database("bookmarks");
+$sel_is_liked = "SELECT * FROM bookmarks WHERE user_id = $user_id AND post_id = $post_id ";
+$result = $is_bookmarked->conn->query($sel_is_liked);
+
+if ($result->num_rows > 0) {
+    // The post is liked by the user
+    $is_bookmarked = true;
+} else {
+    // Not liked
+    $is_bookmarked = false;
+}
+}else{
+    $is_bookmarked = false;
+    $is_liked = false;
+}
+    // Build a structured array for each post
+    $fullPostList[] = [
+        "post" => [
+            "post_data" => $post,
+            "movie_data" => $movie,
+            "likes" => $post_likes,
+            "comments" => $post_comments,
+            "is_liked" => $is_liked,
+            "is_bookmarked" => $is_bookmarked
+            ]
+        ];
     }
-    print(json_encode(["posts" => $posts]));
+    
+    echo json_encode(["postsList"=>$fullPostList]);
+    require_once "UserFollowList.php";
 
     // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
 }else{
