@@ -94,10 +94,10 @@ if ($result->num_rows > 0) {
     ];
 }
 
+
+}
+
 echo json_encode(["postsList"=>$fullPostList]);
-
-    }
-
 
 // echo(json_encode(["success"=>true,"post_data" => $bookmarked_posts]));
 
