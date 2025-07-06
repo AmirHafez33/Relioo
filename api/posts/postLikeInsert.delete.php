@@ -62,6 +62,8 @@ if($like_exsist == 1){
     $like_delete = "DELETE FROM likes WHERE user_id = '$user_id' AND post_id = '$post_id' ";
     $delete_like = $like->conn->query($like_delete);
     $total_likes = $old_likes - 1 ;
+    echo(json_encode(["sucess"=>true , "message"=>"like deleted successfully"]));
+
 }else{
     $insert_like = $like->insert([
         "user_id"=>$user_id,
@@ -81,8 +83,8 @@ $activity = new database("activities");
 $action = "like";
 $insert_activity = $activity->addActivity($user_id, "you added like on a review", $post_id , $post_text , $action);
 
-}
 echo(json_encode(["sucess"=>true , "message"=>"like inserted successfully"]));
+}
 }
 
 $update = "UPDATE posts SET likes = $total_likes WHERE post_id = '$post_id' ";
