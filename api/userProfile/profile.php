@@ -115,7 +115,7 @@ $user_posts = new database("posts");
             
             require_once "UserFollowList.php";
         // echo json_encode(["postsList"=>$fullPostList]);
-        echo json_encode(["is_currentuser" => false, "is_followed" => $is_followed, "AnotherUserData" => $user_data, "following_list" => $following_list, "followers_list" => $followers_list, "postsList" => $fullPostList]);
+        echo json_encode(["is_currentuser" => false, "is_followed" => $is_followed, "userData" => $user_data, "following_list" => $following_list, "followers_list" => $followers_list, "postsList" => $fullPostList]);
 
         // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
     } else {
