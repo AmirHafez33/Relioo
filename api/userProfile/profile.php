@@ -34,7 +34,7 @@ $user_name = $user['name'];
 
 $data = json_decode(file_get_contents('php://input'));
 $id = $data->id ?? false;
-echo(json_encode($id));
+// echo(json_encode($id));
 if ($id) {
     if ($id != $user['id']) {
         // echo (json_encode(["is_currentuser" => false]));
@@ -51,15 +51,16 @@ if ($id) {
             $is_followed = false;
         }
         // echo (json_encode(["is_followed" => $is_followed]));
+$user_posts = new database("posts");
+    $user_posts_array = $user_posts->selectUserPosts("user_id", $id);
+    $user = new database("users");
+    $user_data = $user->select("id", $id);
 
-        $user_posts = new database("posts");
-        $user_posts_array = $user_posts->select("user_id", $id);
-        $user = new database("users");
-        $user_data = $user->select("id", $id);
-
-        // echo (json_encode(["AnotherUserData" => $user_data]));
-
-        $posts = [];
+    require_once "UserFollowList.php";
+    $posts = [];
+    $fullPostList = [] ;
+    // echo(json_encode($user_posts_array));
+    // exit ;
         foreach ($user_posts_array as $post) {
             $movies = new database("movies");
             $likesDB = new database("likes");
@@ -126,11 +127,9 @@ if ($id) {
 
 if (isset($user)) {
     $user_posts = new database("posts");
-    $user_posts_array = $user_posts->select("user_id", $user_id);
+    $user_posts_array = $user_posts->selectUserPosts("user_id", $user_id);
     $user = new database("users");
     $user_data = $user->select("id", $user_id);
-
-
 
     require_once "UserFollowList.php";
     $posts = [];

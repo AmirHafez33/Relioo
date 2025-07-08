@@ -45,7 +45,7 @@ class database
     }
     public function select($column, $value)
 {
-    $select = "SELECT * FROM " . $this->tableName . " WHERE {$column} = '{$value}'";
+    $select = "SELECT * FROM " . $this->tableName . " WHERE {$column} = '{$value}' ";
     $query = ($this->conn)->query($select);
 
     $rows = [];
@@ -53,6 +53,27 @@ class database
         while ($row = mysqli_fetch_assoc($query)) {
             $rows[] = $row;
         }
+    }
+
+    return $rows;
+}
+public function selectUserPosts($column, $value)
+{
+    // تأكد من أن اسم العمود آمن (لا تستخدم إدخال المستخدم مباشرة)
+    if (!in_array($column, ['user_id', 'username'])) {
+        return []; // أو ممكن ترمي Exception
+    }
+
+    // استخدم prepared statement لتجنب SQL injection
+    $stmt = $this->conn->prepare("SELECT * FROM {$this->tableName} WHERE {$column} = ? ORDER BY date_time DESC");
+    $stmt->bind_param("s", $value);
+    $stmt->execute();
+
+    $result = $stmt->get_result();
+    $rows = [];
+
+    while ($row = $result->fetch_assoc()) {
+        $rows[] = $row;
     }
 
     return $rows;
