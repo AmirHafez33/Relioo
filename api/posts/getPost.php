@@ -30,12 +30,39 @@ if ($stmt->num_rows === 0) {
 
 $user = $stmt->fetch_assoc(); // ← ممكن تستخدمه في البوست أو التعليقات
 $user_id = $user['id'];
+// $post_data = json_decode(file_get_contents('php://input'));
+// if(isset($_GET['post_id'])){
+// $post_id = $_GET['post_id'] ;
+// $post = new database("posts");
+
+// $post = $post->select("post_id",$post_id);
+
+// // echo(json_encode($post));
+
+// $post_user_id = $post[0]['user_id'];
+// $post_user = new database("users");
+// $post_user_data = $post_user->select("id",$post_user_id);
+
+
 $post_data = json_decode(file_get_contents('php://input'));
-if(isset($_GET['post_id'])){
-$post_id = $_GET['post_id'] ;
-$post = new database("posts");
-$post = $post->select("post_id",$post_id);
-// echo(json_encode([$post]));
+
+if (isset($_GET['post_id'])) {
+    $post_id = $_GET['post_id'];
+    
+    $post_db = new database("posts");
+    $post = $post_db->select("post_id", $post_id); // بيرجع array of rows
+
+    if (count($post) > 0) {
+        $post_user_id = $post[0]['user_id'];
+
+        $post_user = new database("users");
+        $post_user_data = $post_user->select("id", $post_user_id); // بيرجع array of user row(s)
+
+        // دمج بيانات المستخدم داخل نفس العنصر الخاص بالبوست
+        $post[0] += $post_user_data[0]; // ← أضفنا user data كـ object داخل post
+
+        // echo json_encode($post[0]);
+}
 
 $movie_id =$post[0]['movie_id'];;
 // echo(json_encode([$movie_id]));
@@ -77,8 +104,7 @@ if ($result->num_rows > 0) {
     $is_bookmarked = false;
 }
 
-
-echo(json_encode(["success"=>true,"post-data"=>$post,"is_liked"=>$is_liked,"is_bookmarked"=>$is_bookmarked,"movie_data"=>$movie,"post-likes"=>$likes,"post-comments"=>$comments]));
+echo(json_encode(["success"=>true,"post-data"=>$post[0],"is_liked"=>$is_liked,"is_bookmarked"=>$is_bookmarked,"movie_data"=>$movie,"post-likes"=>$likes,"post-comments"=>$comments]));
 }else{
     echo(json_encode(["success"=>false,"message"=>"unknown post id"]));
 }
