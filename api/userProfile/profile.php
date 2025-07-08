@@ -6,7 +6,7 @@ header('Content-Type: application/json');
 session_start();
 require_once "../userDataBase/database.php";
 
-    /************************** token validation ************************** */
+/************************** token validation ************************** */
 
 $headers = apache_request_headers();
 $authHeader = $headers['Authorization'] ?? '';
@@ -20,7 +20,7 @@ if (!$authHeader || !str_starts_with($authHeader, 'Bearer ')) {
 $token = trim(str_replace('Bearer', '', $authHeader));
 
 // تحقق من التوكن في قاعدة البيانات
- $stmt = new database("users");
+$stmt = new database("users");
 $stmt = $stmt->conn->query("SELECT * FROM users WHERE api_token = '$token' ");
 if ($stmt->num_rows === 0) {
     http_response_code(403);
@@ -33,93 +33,94 @@ $user_id = $user['id'];
 $user_name = $user['name'];
 
 $data = json_decode(file_get_contents('php://input'));
-$id = $data->id ?? false ;
-// echo(json_encode($id));
-if($id){
-if($id!=$user['id']){
-    echo (json_encode(["is_currentuser" => false]));
-    
-    $is_followed = new database("user_following");
-    $sel_is_followed = "SELECT * FROM user_following WHERE user_id = $user_id AND followed_id = $id ";
-$result = $is_followed->conn->query($sel_is_followed);
+$id = $data->id ?? false;
+echo(json_encode($id));
+if ($id) {
+    if ($id != $user['id']) {
+        // echo (json_encode(["is_currentuser" => false]));
 
-if ($result->num_rows > 0) {
-    // The post is liked by the user
-    $is_followed = true;
-} else {
-    // Not liked
-    $is_followed = false;
-}
-echo (json_encode(["is_followed" => $is_followed]));
+        $is_followed = new database("user_following");
+        $sel_is_followed = "SELECT * FROM user_following WHERE user_id = $user_id AND followed_id = $id ";
+        $result = $is_followed->conn->query($sel_is_followed);
 
-    $user_posts = new database("posts");
-    $user_posts_array = $user_posts->select("user_id", $id);
-    $user = new database("users");
-    $user_data = $user->select("id", $id);
-    
-    echo (json_encode(["AnotherUserData" => $user_data]));
+        if ($result->num_rows > 0) {
+            // The post is liked by the user
+            $is_followed = true;
+        } else {
+            // Not liked
+            $is_followed = false;
+        }
+        // echo (json_encode(["is_followed" => $is_followed]));
 
-    $posts = [] ;
-    foreach ($user_posts_array as $post) {
-        $movies = new database("movies");
+        $user_posts = new database("posts");
+        $user_posts_array = $user_posts->select("user_id", $id);
+        $user = new database("users");
+        $user_data = $user->select("id", $id);
+
+        // echo (json_encode(["AnotherUserData" => $user_data]));
+
+        $posts = [];
+        foreach ($user_posts_array as $post) {
+            $movies = new database("movies");
             $likesDB = new database("likes");
             $commentsDB = new database("comments");
 
-       $movie = $movies->select("movie_id",$post['movie_id']);
-    $post_likes = $likesDB->select("post_id", $post['post_id']);
-    $post_comments = $commentsDB->select("post_id", $post['post_id']);
-    $post_id = $post['post_id'];
-    if(isset($user_id)){
-    /************************check this post is liked from the current user********************************* */
-$is_liked = new database("likes");
-$sel_is_liked = "SELECT * FROM likes WHERE user_id = $user_id AND post_id = $post_id ";
-$result = $is_liked->conn->query($sel_is_liked);
+            $movie = $movies->select("movie_id", $post['movie_id']);
+            $post_likes = $likesDB->select("post_id", $post['post_id']);
+            $post_comments = $commentsDB->select("post_id", $post['post_id']);
+            $post_id = $post['post_id'];
+            if (isset($user_id)) {
+                /************************check this post is liked from the current user********************************* */
+                $is_liked = new database("likes");
+                $sel_is_liked = "SELECT * FROM likes WHERE user_id = $user_id AND post_id = $post_id ";
+                $result = $is_liked->conn->query($sel_is_liked);
 
-if ($result->num_rows > 0) {
-    // The post is liked by the user
-    $is_liked = true;
-} else {
-    // Not liked
-    $is_liked = false;
-}
+                if ($result->num_rows > 0) {
+                    // The post is liked by the user
+                    $is_liked = true;
+                } else {
+                    // Not liked
+                    $is_liked = false;
+                }
 
-/************************check this post is bookmarked from the current user********************************* */
-$is_bookmarked = new database("bookmarks");
-$sel_is_liked = "SELECT * FROM bookmarks WHERE user_id = $user_id AND post_id = $post_id ";
-$result = $is_bookmarked->conn->query($sel_is_liked);
+                /************************check this post is bookmarked from the current user********************************* */
+                $is_bookmarked = new database("bookmarks");
+                $sel_is_liked = "SELECT * FROM bookmarks WHERE user_id = $user_id AND post_id = $post_id ";
+                $result = $is_bookmarked->conn->query($sel_is_liked);
 
-if ($result->num_rows > 0) {
-    // The post is liked by the user
-    $is_bookmarked = true;
-} else {
-    // Not liked
-    $is_bookmarked = false;
-}
-}else{
-    $is_bookmarked = false;
-    $is_liked = false;
-}
-    // Build a structured array for each post
-    $fullPostList[] = [
-        "post" => [
-            "post_data" => $post,
-            "movie_data" => $movie,
-            "likes" => $post_likes,
-            "comments" => $post_comments,
-            "is_liked" => $is_liked,
-            "is_bookmarked" => $is_bookmarked
-            ]
-        ];
+                if ($result->num_rows > 0) {
+                    // The post is liked by the user
+                    $is_bookmarked = true;
+                } else {
+                    // Not liked
+                    $is_bookmarked = false;
+                }
+            } else {
+                $is_bookmarked = false;
+                $is_liked = false;
+            }
+            // Build a structured array for each post
+            $fullPostList[] = [
+                "post" => [
+                    "post_data" => $post,
+                    "movie_data" => $movie,
+                    "likes" => $post_likes,
+                    "comments" => $post_comments,
+                    "is_liked" => $is_liked,
+                    "is_bookmarked" => $is_bookmarked
+                    ]
+                ];
+            }
+            
+            require_once "UserFollowList.php";
+        // echo json_encode(["postsList"=>$fullPostList]);
+        echo json_encode(["is_currentuser" => false, "is_followed" => $is_followed, "AnotherUserData" => $user_data, "following_list" => $following_list, "followers_list" => $followers_list, "postsList" => $fullPostList]);
+
+        // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
+    } else {
+        echo (json_encode(["status" => "failed", "message" => "please login"]));
     }
-    
-    echo json_encode(["postsList"=>$fullPostList]);
-    require_once "UserFollowList.php";
-
-    // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
-}else{
-    echo(json_encode(["status"=>"failed" , "message"=>"please login"]));
-}
-exit ;
+    exit;
 }
 
 
@@ -128,68 +129,69 @@ if (isset($user)) {
     $user_posts_array = $user_posts->select("user_id", $user_id);
     $user = new database("users");
     $user_data = $user->select("id", $user_id);
-    
-    echo (json_encode(["is_currentuser" => true]));
-    echo (json_encode(["userData" => $user_data]));
-    
+
+
+
     require_once "UserFollowList.php";
-    $posts = [] ;
+    $posts = [];
     foreach ($user_posts_array as $post) {
         // print(json_encode($post));
-            $movies = new database("movies");
-            $likesDB = new database("likes");
-            $commentsDB = new database("comments");
+        $movies = new database("movies");
+        $likesDB = new database("likes");
+        $commentsDB = new database("comments");
 
-       $movie = $movies->select("movie_id",$post['movie_id']);
-    $post_likes = $likesDB->select("post_id", $post['post_id']);
-    $post_comments = $commentsDB->select("post_id", $post['post_id']);
-    $post_id = $post['post_id'];
-    if(isset($user_id)){
-    /************************check this post is liked from the current user********************************* */
-$is_liked = new database("likes");
-$sel_is_liked = "SELECT * FROM likes WHERE user_id = $user_id AND post_id = $post_id ";
-$result = $is_liked->conn->query($sel_is_liked);
+        $movie = $movies->select("movie_id", $post['movie_id']);
+        $post_likes = $likesDB->select("post_id", $post['post_id']);
+        $post_comments = $commentsDB->select("post_id", $post['post_id']);
+        $post_id = $post['post_id'];
+        if (isset($user_id)) {
+            /************************check this post is liked from the current user********************************* */
+            $is_liked = new database("likes");
+            $sel_is_liked = "SELECT * FROM likes WHERE user_id = $user_id AND post_id = $post_id ";
+            $result = $is_liked->conn->query($sel_is_liked);
 
-if ($result->num_rows > 0) {
-    // The post is liked by the user
-    $is_liked = true;
-} else {
-    // Not liked
-    $is_liked = false;
-}
+            if ($result->num_rows > 0) {
+                // The post is liked by the user
+                $is_liked = true;
+            } else {
+                // Not liked
+                $is_liked = false;
+            }
 
-/************************check this post is bookmarked from the current user********************************* */
-$is_bookmarked = new database("bookmarks");
-$sel_is_liked = "SELECT * FROM bookmarks WHERE user_id = $user_id AND post_id = $post_id ";
-$result = $is_bookmarked->conn->query($sel_is_liked);
+            /************************check this post is bookmarked from the current user********************************* */
+            $is_bookmarked = new database("bookmarks");
+            $sel_is_liked = "SELECT * FROM bookmarks WHERE user_id = $user_id AND post_id = $post_id ";
+            $result = $is_bookmarked->conn->query($sel_is_liked);
 
-if ($result->num_rows > 0) {
-    // The post is liked by the user
-    $is_bookmarked = true;
-} else {
-    // Not liked
-    $is_bookmarked = false;
-}
-}else{
-    $is_bookmarked = false;
-    $is_liked = false;
-}
-    // Build a structured array for each post
-    $fullPostList[] = [
-        "post" => [
-            "post_data" => $post,
-            "movie_data" => $movie,
-            "likes" => $post_likes,
-            "comments" => $post_comments,
-            "is_liked" => $is_liked,
-            "is_bookmarked" => $is_bookmarked
-        ]
-    ];
-}
+            if ($result->num_rows > 0) {
+                // The post is liked by the user
+                $is_bookmarked = true;
+            } else {
+                // Not liked
+                $is_bookmarked = false;
+            }
+        } else {
+            $is_bookmarked = false;
+            $is_liked = false;
+        }
+        // Build a structured array for each post
+        $fullPostList[] = [
+            "post" => [
+                "post_data" => $post,
+                "movie_data" => $movie,
+                "likes" => $post_likes,
+                "comments" => $post_comments,
+                "is_liked" => $is_liked,
+                "is_bookmarked" => $is_bookmarked
+            ]
+        ];
+    }
 
-echo json_encode(["postsList"=>$fullPostList]);
+
+    // echo (json_encode([]));
+    echo json_encode(["is_currentuser" => true, "userData" => $user_data, "following_list" => $following_list, "followers_list" => $followers_list, "postsList" => $fullPostList]);
 
     // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
-}else{
-    echo(json_encode(["status"=>"failed" , "message"=>"please login"]));
+} else {
+    echo (json_encode(["status" => "failed", "message" => "please login"]));
 }

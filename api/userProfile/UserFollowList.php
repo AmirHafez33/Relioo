@@ -47,13 +47,13 @@ if($id!=$user['id']){
     if (isset($followed_users)) {
         foreach ($followed_users as $row) {
             $followed_id = $row['followed_id'];
-            $user_data = $list->select("id", $followed_id); // Assumes this returns an array with one row
-            if (!empty($user_data)) {
-                $following_list[] = $user_data[0]; // Get the user_name of followed user
+            $followed_user_data = $list->select("id", $followed_id); // Assumes this returns an array with one row
+            if (!empty($followed_user_data)) {
+                $following_list[] = $followed_user_data[0]; // Get the user_name of followed user
             }
         }
     }
-    echo json_encode(["following_list" => $following_list]);
+    // echo json_encode(["following_list" => $following_list]);
 
     // $user_id = $_SESSION['login_user_data']['id']; // current user
 
@@ -67,20 +67,20 @@ if($id!=$user['id']){
     if (isset($followers)) {
         foreach ($followers as $row) {
             $follower_id = $row['user_id'];
-            $user_data = $usersTable->select("id", $follower_id); // fetch follower user data
+            $follower_user_data = $usersTable->select("id", $follower_id); // fetch follower user data
 
-            if (!empty($user_data)) {
-                $followers_list[] = $user_data[0]; // add full follower data (or just 'user_name')
+            if (!empty($follower_user_data)) {
+                $followers_list[] = $follower_user_data[0]; // add full follower data (or just 'user_name')
             }
         }
-        echo json_encode(["followers_list" => $followers_list]);
+        // echo json_encode(["followers_list" => $followers_list]);
     }
     // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
 } else {
     echo (json_encode(["status" => "failed", "message" => "please login"]));
 }
-exit ;
-}
+// exit ;
+}else{
 
 if (isset($user)) {
     $following = new database("user_following");
@@ -92,13 +92,13 @@ if (isset($user)) {
     if (isset($followed_users)) {
         foreach ($followed_users as $row) {
             $followed_id = $row['followed_id'];
-            $user_data = $list->select("id", $followed_id); // Assumes this returns an array with one row
-            if (!empty($user_data)) {
-                $following_list[] = $user_data[0]; // Get the user_name of followed user
+            $followed_user_data = $list->select("id", $followed_id); // Assumes this returns an array with one row
+            if (!empty($followed_user_data)) {
+                $following_list[] = $followed_user_data[0]; // Get the user_name of followed user
             }
         }
     }
-    echo json_encode(["following_list" => $following_list]);
+    // echo json_encode(["following_list" => $following_list]);
 
     // $user_id = $_SESSION['login_user_data']['id']; // current user
 
@@ -112,15 +112,12 @@ if (isset($user)) {
     if (isset($followers)) {
         foreach ($followers as $row) {
             $follower_id = $row['user_id'];
-            $user_data = $usersTable->select("id", $follower_id); // fetch follower user data
+            $follower_user_data = $usersTable->select("id", $follower_id); // fetch follower user data
 
-            if (!empty($user_data)) {
-                $followers_list[] = $user_data[0]; // add full follower data (or just 'user_name')
+            if (!empty($follower_user_data)) {
+                $followers_list[] = $follower_user_data[0]; // add full follower data (or just 'user_name')
             }
         }
-        echo json_encode(["followers_list" => $followers_list]);
     }
-    // echo json_encode(["status" => "success", "message" => "Login successful", "user_data" => $user]);
-} else {
-    echo (json_encode(["status" => "failed", "message" => "please login"]));
+}
 }
