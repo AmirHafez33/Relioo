@@ -46,7 +46,9 @@ foreach ($sel_bookmarkes as $bookmark) {
                     $movies = new database("movies");
             $likesDB = new database("likes");
             $commentsDB = new database("comments");
-
+            $user = new database("users");
+            $post_user = $user->select("id",$post['user_id']);
+            
        $movie = $movies->select("movie_id",$post['movie_id']);
     $post_likes = $likesDB->select("post_id", $post['post_id']);
     $post_comments = $commentsDB->select("post_id", $post['post_id']);
@@ -84,7 +86,7 @@ if ($result->num_rows > 0) {
     // Build a structured array for each post
     $fullPostList[] = [
         "post" => [
-            "post_data" => $post,
+            "post_data" => $post+$post_user[0],
             "movie_data" => $movie,
             "likes" => $post_likes,
             "comments" => $post_comments,

@@ -77,7 +77,12 @@ $likes = $likes->select("post_id",$post_id);
 
 $comments = new database("comments");
 $comments = $comments->select("post_id",$post_id);
-
+$post_comments = [] ;
+foreach($comments as $comment){
+    $user = new database("users");
+    $comment_user = $user->select("id",$comment['user_id']);
+    $post_comments[] = $comment+$comment_user[0];
+}
 /************************check this post is liked from the current user********************************* */
 $is_liked = new database("likes");
 $sel_is_liked = "SELECT * FROM likes WHERE user_id = $user_id AND post_id = $post_id ";
@@ -104,7 +109,7 @@ if ($result->num_rows > 0) {
     $is_bookmarked = false;
 }
 
-echo(json_encode(["success"=>true,"post-data"=>$post[0],"is_liked"=>$is_liked,"is_bookmarked"=>$is_bookmarked,"movie_data"=>$movie,"post-likes"=>$likes,"post-comments"=>$comments]));
+echo(json_encode(["success"=>true,"post-data"=>$post[0],"is_liked"=>$is_liked,"is_bookmarked"=>$is_bookmarked,"movie_data"=>$movie,"post-likes"=>$likes,"post-comments"=>$post_comments]));
 }else{
     echo(json_encode(["success"=>false,"message"=>"unknown post id"]));
 }
