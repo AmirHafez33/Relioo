@@ -46,7 +46,18 @@ $insert_comment = $comment->insert([
     $inserted_id = $comment->conn->insert_id;
 $last_comment = $comment->select("id",$inserted_id);
 
-    echo json_encode(["status"=>"success","message"=>"comment inserted successfuly","comment_data"=>$last_comment]);
+$post = new database("posts");
+$post = $post->select("post_id",$post_id);
+
+$post_user = new database("users");
+$post_user = $post_user->select("id",$post[0]['user_id']);
+// echo(json_encode($post_user));
+$likes = new database("likes");
+$likes = $likes->select("post_id",$post_id);
+
+
+
+    echo json_encode(["status"=>"success","message"=>"comment inserted successfuly","post-data"=>$post[0]+$post_user[0],"comment_data"=>$last_comment[0]+$user]);
 
 /**************** update num of comments on post ***************** */
 
@@ -63,7 +74,6 @@ $post = "SELECT * FROM posts WHERE post_id = '$post_id'";
 $result = $update_post->conn->query($post);
 $row = $result->fetch_assoc();
     $post_text = $row['text'];
-
 
 $update = "UPDATE posts SET comments = $total_comments WHERE post_id = '$post_id' ";
 $update_query = $update_post->conn->query($update);
