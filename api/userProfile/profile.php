@@ -126,6 +126,7 @@ $user_posts = new database("posts");
 
 
 if (isset($user)) {
+    $fullPostList = [] ;
     $user_posts = new database("posts");
     $user_posts_array = $user_posts->selectUserPosts("user_id", $user_id);
     $user = new database("users");
